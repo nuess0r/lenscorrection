@@ -1,4 +1,11 @@
 #Installing needed libraries to make the scripts work
+
+#Debian Trixie
+sudo apt-get install python3-pip python3-venv python3-opencv liblensfun1
+python3 -m venv .
+source bin/activate
+pip install lensfunpy pillow opencv-python piexif
+
 #Ubuntu 14.04
 sudo apt-get install build-essential liblensfun-dev python-opencv python-pil
 sudo pip install lensfunpy

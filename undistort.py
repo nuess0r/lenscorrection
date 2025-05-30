@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf_8 -*
 #
 # A Script to batch correct photo distortion for a GoPro Hero2 using the Lenfun database. 
@@ -67,7 +67,7 @@ def correct_photo(photo):
     
     #Set output filename
     fileName, fileExtension = os.path.splitext(photo)
-    undistortedImagePath = "".join([fileName,"_fixN",fileExtension])
+    undistortedImagePath = "".join([fileName,"_fix",fileExtension])
     
     #Query the Lensfun db for camera parameters
     db = lensfunpy.Database()
