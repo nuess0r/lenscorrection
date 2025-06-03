@@ -8,7 +8,7 @@
 
 from PIL import Image
 from PIL.ExifTags import TAGS
-import lensfunpy # Lensfun 
+import lensfunpy # Lensfun
 import cv2 # OpenCV library
 import os
 from multiprocessing import Pool
@@ -55,6 +55,7 @@ def multi_process(photos):
 
 def correct_photo(photo):
     '''Apply distortion correction'''
+    debug = False;
 
     #exif = get_exif_data(photo)
     #exif.get('Make')
@@ -75,7 +76,7 @@ def correct_photo(photo):
     lens = db.find_lenses(cam)[0]
 
     #TODO: set camera parameters from exif data and lensfun
-    focalLength = lens.min_focal #2.5
+    focal_length = lens.min_focal #2.5
     aperture = 2.8
     distance = 0
 
@@ -83,9 +84,40 @@ def correct_photo(photo):
     height, width = im.shape[0], im.shape[1]
 
     mod = lensfunpy.Modifier(lens, cam.crop_factor, width, height)
-    mod.initialize(focalLength, aperture, distance)
+    mod.initialize(focal_length, aperture, distance)
 
     undistCoords = mod.apply_geometry_distortion()
+
+    if debug:
+        stepx = int(width/8)
+        stepy = int(height/8)
+        for i in range(1,8):
+            cv2.line(im,(stepx*i,0),(stepx*i,height),(255,0,0),5)
+            cv2.line(im,(0,stepy*i),(width,stepy*i),(255,0,0),5)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        cv2.putText(im,text=f"{cam}",
+                    org=(stepx+100,stepy+50),
+                    fontFace=font,
+                    fontScale=1,
+                    color=(255,255,255),
+                    thickness=5,
+                    lineType=cv2.LINE_AA)
+        cv2.putText(im,text=f"{lens}",
+                    org=(stepx+100,stepy+100),
+                    fontFace=font,
+                    fontScale=1,
+                    color=(255,255,255),
+                    thickness=5,
+                    lineType=cv2.LINE_AA)
+        cv2.putText(im,text=f"{focal_length}mm, F{aperture}, {distance}m",
+                        org=(stepx+100,stepy+150),
+                        fontFace=font,
+                        fontScale=1,
+                        color=(255,255,255),
+                        thickness=5,
+                        lineType=cv2.LINE_AA)
+
     #imUndistorted = cv2.remap(im, undistCoords, None, cv2.INTER_LANCZOS4)
     imUndistorted = cv2.remap(im, undistCoords, None, cv2.INTER_NEAREST)
     #cv2.imwrite(undistortedImagePath, imUndistorted,[int(cv2.IMWRITE_JPEG_QUALITY), 95])
